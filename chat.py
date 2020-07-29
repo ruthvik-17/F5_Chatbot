@@ -1,17 +1,17 @@
 import random
 from constants import *
 
-class chat_bot():
-    # All other functioalities are called from here.
+
+class ChatBot:
+    # All other functionalities are defined/called in this class.
 
     def __init__(self):
         self.state = 0
 
     def greet(self):
-        if self.state == 0:
-            print(random.choice(GREETING_PHRASE_1) + random.choice(GREETING_PHRASE_2))
-            self.state = 1
-        pass
+        print(random.choice(GREETING_PHRASE_1) + random.choice(GREETING_PHRASE_2))
+        self.state = 1
 
-    def funcname(self):
-        pass
+    def start_chat(self):
+        if self.state == 0:
+            self.greet()
