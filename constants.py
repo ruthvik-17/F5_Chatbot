@@ -7,5 +7,6 @@ GREETING_PHRASE_1 = [
 ]
 
 GREETING_PHRASE_2 = [
-    " What are you looking for?"
+    " What are you looking for?",
+    "What brings you here"
 ]

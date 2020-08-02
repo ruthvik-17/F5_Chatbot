@@ -1,5 +1,6 @@
 import random
-from constants import *
+import importlib
+from constants import GREETING_PHRASE_1, GREETING_PHRASE_2
 
 
 class ChatBot:
