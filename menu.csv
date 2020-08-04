@@ -1,8 +1,6 @@
-Number,Name,subsections,data
-1,F5 Solutions,2 | 3 | 4 | 5 | 6,
-2,Load Balancing,,
-3,Application security,,
-4,Container Ingress,,
-5,NGINX products,,
-6,Shape Security products,,
-7,Overview of all F5 solutions,,"From code to customer, F5 solutions are available for the entire application infrastructure stack. Learn more on our solutions page at https://www.f5.com/solutions ."
+number,name,subsections,data
+1,Main menu,2 | 3,"Choose one of the following:"
+2,F5 Solutions,4 | 5,"What solution would you like to learn more about?"
+3,Company information,,"Learn more about F5 on the company page."
+4,Load Balancing,,"F5 is the global leader in Load Balancing products and services."
+5,Application security,,"F5 security solutions include WAF, DDoS protection, Bot defense, and more."
