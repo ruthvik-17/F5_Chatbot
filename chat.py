@@ -11,7 +11,7 @@ from detection import Detection
 
 def clean_text(text):
     text = re.sub(r'[\'\"\n?]', '', text)
-    text = re.sub(r'\.\s', r' ', text.lower())
+    text = re.sub(r'[.\s]', r' ', text.lower())
     return text
 
 
@@ -104,9 +104,9 @@ class ChatBot:
 
         while not self.exit:
             text = input("user:")
-            text = re.sub(r'[\'\"\n?]', '', text)
-            text = re.sub(r'\.\s', r' ', text.lower())
-            self.curr_msg = text.strip()
+            # text = re.sub(r'[\'\"\n?]', '', text)
+            # text = re.sub(r'[\.\s]', r' ', text.lower())
+            self.curr_msg = clean_text(text).strip()
             if self.curr_msg not in STOP_CHAT:
                 intent = self.detect_intent(self.curr_msg)
                 answer = self.detect_answer(self.curr_msg)

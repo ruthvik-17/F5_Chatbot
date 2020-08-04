@@ -40,7 +40,8 @@ INTENT_DATA = {
         'data': [
             'Company information',
             'What is F5 Networks?',
-            'What is F5 Networks famous for?'
+            'What is F5 Networks famous for?',
+            'I want to know about F5 Networks.'
         ]
     },
     "Load Balancing": {

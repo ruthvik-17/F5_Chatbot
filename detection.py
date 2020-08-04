@@ -8,7 +8,7 @@ from nltk.corpus import stopwords
 
 def clean_text_tokens(text):
     text = re.sub(r'[\'\"\n?]', '', text)
-    text = re.sub(r'\.\s', r' ', text)
+    text = re.sub(r'[\.\s]', r' ', text)
     tokens = re.split(r'[^a-zA-Z0-9.\-]', text.lower())
     return tokens
 
