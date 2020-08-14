@@ -10,7 +10,7 @@ from detection import Detection
 
 
 def clean_text(text):
-    text = re.sub(r'[\'\"\n?]', '', text)
+    text = re.sub(r'[\'\"?]', '', text)
     text = re.sub(r'[.\s]', r' ', text.lower())
     return text
 
@@ -55,12 +55,12 @@ class ChatBot:
 
     def detect_intent(self, query):
         intent = self.intent_detector.process_results(query)
-        # print("\n\n detected intent:", intent, "\n\n")
+        # print(" detected intent:", intent, "")
         return intent
 
     def detect_answer(self, query):
         question, answer, score = self.answer_detector.process_results(query)
-        # print("question:", question, "\n detected  answer:", answer, ", score:", score)
+        # print("question:", question, " detected  answer:", answer, ", score:", score)
         if score > 0.7:
             return answer
         else:
@@ -88,8 +88,8 @@ class ChatBot:
             else:
                 # print("Email not found.")
                 result += "Email not found."
-        result += "\nOkay. Back to main menu."
-        # print("\nOkay. Back to main menu.")
+        result += "Okay. Back to main menu."
+        # print("Okay. Back to main menu.")
         # self.handle_intent(INTENT_DATA['Main menu']['number'])
         return result
 
@@ -104,8 +104,8 @@ class ChatBot:
         result = ""
         if data:
             for each in data:
-                result += each.strip() + "\n"
-                # print("\n", each.strip())
+                result += each.strip() + ""
+                # print("", each.strip())
 
         if sub_sections:
             for each in sub_sections:
@@ -113,7 +113,7 @@ class ChatBot:
                 # print("->" + self.menu[int(each.strip())]['name'])
         else:
             result += "Would you like to get in touch with the F5 team to " \
-                      "discover what would be a good fit for your specific use case?" + "\n" + "You can type yes/no."
+                      "discover what would be a good fit for your specific use case?" + "" + "You can type yes/no."
             self.state = "sales"
         return result
 
@@ -123,19 +123,19 @@ class ChatBot:
         self.curr_msg = clean_text(text).strip()
         result = ""
         if self.state == "intent":
-            while not self.exit:
+            if not self.exit:
                 # text = input("user:")
-                # text = re.sub(r'[\'\"\n?]', '', text)
+                # text = re.sub(r'[\'\"?]', '', text)
                 # text = re.sub(r'[\.\s]', r' ', text.lower())
                 if self.curr_msg not in STOP_CHAT:
                     intent = self.detect_intent(self.curr_msg)
                     answer = self.detect_answer(self.curr_msg)
                     if answer and intent:
-                        # print("\n" + answer)
+                        # print("" + answer)
                         result += answer
-                        result += "\n" + self.handle_intent(intent)
+                        result += "" + self.handle_intent(intent)
                     elif answer:
-                        print("\n" + str(answer))
+                        print("" + str(answer))
                         result += self.handle_intent(INTENT_DATA['Main menu']['number'])
                     elif intent:
                         result += self.handle_intent(intent)
