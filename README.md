@@ -1,7 +1,9 @@
 # F5_Chatbot
 Chatbot for F5 Networks
 Clone this repository:
-```git clone https://github.com/ruthvik-17/F5_Chatbot.git```
+```
+git clone https://github.com/ruthvik-17/F5_Chatbot.git
+```
 Commands to test:
 1. Create a Venv in your virtual environments folder:
 ```
@@ -29,4 +31,4 @@ python app.py
 http://127.0.0.1:5000/
 ```
 
-Type `stop/exit` to exit from the chat bot.
+Type `stop/exit` to exit from the chatbot.
