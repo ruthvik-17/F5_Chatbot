@@ -2,8 +2,13 @@ import math
 import re
 # import time
 # from typing import Dict, List
+import nltk
 
-from nltk.corpus import stopwords
+try:
+    from nltk.corpus import stopwords
+except LookupError:
+    nltk.download("stopwords")
+    from nltk.corpus import stopwords
 
 
 def clean_text_tokens(text):
