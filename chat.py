@@ -151,6 +151,7 @@ class ChatBot:
                         # result += self.handle_intent(intent)
                         result.extend(self.handle_intent(intent))
                     else:
+                        result.append(("Sorry, I did not understand that.", "text"))
                         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                         # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
                 else:
