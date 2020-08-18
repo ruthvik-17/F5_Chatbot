@@ -11,7 +11,7 @@ from detection import Detection
 
 def clean_text(text):
     text = re.sub(r'[\'\"?]', '', text)
-    text = re.sub(r'[.\s]', r' ', text.lower())
+    text = re.sub(r'[.\s?]', r' ', text.lower())
     return text
 
 
@@ -72,25 +72,27 @@ class ChatBot:
         # print("You can type yes/no.")
         # response = input("user: ")
         response = text
-        result = ""
+        result = []
         if self.state == "sales":
             if response.strip(r'.').lower() in ['yes', 'okay', 'sure']:
                 # print("Okay, please provide your work e-mail id.")
-                result += "Okay, please provide your work e-mail id."
+                result.append(("Okay, please provide your work e-mail id.", "text"))
                 self.state = "get_mail"
+                return result
         elif self.state == "get_mail":
             email = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', response)
             self.state = "intent"
             if email:
                 # self.send_mail(email)
                 # print("Mail noted. Our sales executive will contact you.")
-                result += "Mail noted. Our sales executive will contact you."
+                result.append(("Mail noted. Our sales executive will contact you.", "text"))
             else:
                 # print("Email not found.")
-                result += "Email not found."
-        result += "Okay. Back to main menu."
+                result.append(("Email not found.", "text"))
+        # result.append(("Okay. Back to main menu.", "text"))
         # print("Okay. Back to main menu.")
-        # self.handle_intent(INTENT_DATA['Main menu']['number'])
+        self.state = 'intent'
+        result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
         return result
 
     def handle_intent(self, intent_num):
@@ -101,19 +103,25 @@ class ChatBot:
 
         data = self.menu[intent_num]['data']
         sub_sections = self.menu[intent_num]['subsections']
-        result = ""
+        result = []
         if data:
             for each in data:
-                result += each.strip() + ""
+                # result += each.strip() + ""
+                result.append((each.strip(), 'text'))
                 # print("", each.strip())
 
         if sub_sections:
             for each in sub_sections:
-                result += "->" + self.menu[int(each.strip())]['name']
-                # print("->" + self.menu[int(each.strip())]['name'])
+                # result += "->" + self.menu[int(each.strip())]['name']
+                result.append((self.menu[int(each.strip())]['name'], 'button'))
         else:
-            result += "Would you like to get in touch with the F5 team to " \
-                      "discover what would be a good fit for your specific use case?" + "" + "You can type yes/no."
+            # result += "Would you like to get in touch with the F5 team to " \
+            #           "discover what would be a good fit for your specific use case?" + "" + "You can type yes/no."
+            result.append(("Would you like to get in touch with the F5 team to "
+                           "discover what would be a good fit for your specific use case?", 'text'))
+            result.append(('Yes!', 'button'))
+            result.append(('No.', 'button'))
+
             self.state = "sales"
         return result
 
@@ -121,7 +129,7 @@ class ChatBot:
         # if self.state == 0:
         #     self.greet()
         self.curr_msg = clean_text(text).strip()
-        result = ""
+        result = []
         if self.state == "intent":
             if not self.exit:
                 # text = input("user:")
@@ -132,23 +140,31 @@ class ChatBot:
                     answer = self.detect_answer(self.curr_msg)
                     if answer and intent:
                         # print("" + answer)
-                        result += answer
-                        result += "" + self.handle_intent(intent)
+                        result.append((answer, 'text'))
+                        result.extend(self.handle_intent(intent))
                     elif answer:
-                        print("" + str(answer))
-                        result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                        # print("" + str(answer))
+                        # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                        result.append((answer, 'text'))
+                        result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                     elif intent:
-                        result += self.handle_intent(intent)
+                        # result += self.handle_intent(intent)
+                        result.extend(self.handle_intent(intent))
                     else:
-                        result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                        result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
+                        # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
                 else:
                     self.exit = True
         elif self.state == "sales":
-            result += self.handle_sales(self.curr_msg)
+            result.extend(self.handle_sales(self.curr_msg))
+            # result += self.handle_sales(self.curr_msg)
         elif self.state == "get_mail":
-            result += self.handle_sales(text)
-            result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+            result.extend(self.handle_sales(text))
+            # result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
+            # result += self.handle_sales(text)
+            # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
         if self.exit:
-            return "Good bye."
+            self.exit = False
+            return [("Good bye.", "text")]
 
         return result
