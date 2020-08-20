@@ -7,17 +7,22 @@ app.static_folder = 'static'
 app.config['JSON_SORT_KEYS'] = False
 
 chat_instance = ChatBot()
+# global browser
 
 
 @app.route("/")
 def home():
+    # global browser
+    # browser = request.user_agent.browser
     return render_template("index.html")
 
 
 @app.route("/get")
 def get_bot_response():
     user_msg = request.args.get('msg')
-    response = chat_instance.get_response(user_msg)
+    browser = request.user_agent.browser
+    response = chat_instance.get_response(user_msg, browser)
+    # response.append((browser, "text"))
     return OrderedDict(response)
 
 
