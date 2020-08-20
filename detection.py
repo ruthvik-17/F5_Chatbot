@@ -1,8 +1,7 @@
 import math
 import re
-# import time
-# from typing import Dict, List
 import nltk
+from nltk.tokenize import word_tokenize
 
 try:
     from nltk.corpus import stopwords
@@ -10,11 +9,25 @@ except LookupError:
     nltk.download("stopwords")
     from nltk.corpus import stopwords
 
+try:
+    from nltk.stem import WordNetLemmatizer
+except LookupError:
+    nltk.download("wordnet")
+    from nltk.stem import WordNetLemmatizer
+
+# import these modules
+from nltk.stem import WordNetLemmatizer
+
 
 def clean_text_tokens(text):
+    lemmatizer = WordNetLemmatizer()
     text = re.sub(r'[\'\"\n?]', '', text)
     text = re.sub(r'[.\s]', r' ', text)
-    tokens = re.split(r'[^a-zA-Z0-9.\-]', text.lower())
+    tokens = []
+    # tokens = re.split(r'[^a-zA-Z0-9.\-]', text.lower())
+    w = word_tokenize(text)
+    for i in w:
+        tokens.append(lemmatizer.lemmatize(i.lower()))
     return tokens
 
 
