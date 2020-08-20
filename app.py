@@ -1,9 +1,10 @@
 from chat import ChatBot
-
+from collections import OrderedDict
 from flask import Flask, render_template, request
 
 app = Flask(__name__)
 app.static_folder = 'static'
+app.config['JSON_SORT_KEYS'] = False
 
 chat_instance = ChatBot()
 
@@ -17,11 +18,7 @@ def home():
 def get_bot_response():
     user_msg = request.args.get('msg')
     response = chat_instance.get_response(user_msg)
-    result = ""
-    for each in response:
-        result += each[0] + '\n'
-    # return result + str(response)
-    return result
+    return OrderedDict(response)
 
 
 if __name__ == "__main__":
