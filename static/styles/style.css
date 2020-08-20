@@ -145,6 +145,9 @@ body {
 .msger-send-btn:hover {
   background: rgb(0, 180, 50);
 }
+.msg-txt {
+  padding: 5px;
+}
 
 .display-area {
   display: flex;

@@ -108,15 +108,14 @@
         }
         const msgText = text + buttons;
         appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-        $(".display-btn").each( function () {
-            this.addEventListener("click", event => {
-
-              const msgText = event.target.textContent || event.srcElement.textContent;
+        $(".display-btn").off("click");
+        $(".display-btn").click( function () {
+              console.log("Clicked");
+              const msgText = this.textContent;
 
               const textHTML = `<div class="msg-text">${msgText}</div>`;
               appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
               botResponse(msgText);
-            });
         });
       });
 
