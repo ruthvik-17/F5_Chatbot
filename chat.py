@@ -27,7 +27,7 @@ class ChatBot:
         self.create_menu_graph()
         # print(self.menu)
 
-        pk_file = open('k_.pkl', 'rb')
+        pk_file = open('final.pkl', 'rb')
         answers = pickle.load(pk_file)
         self.answer_detector = Detection(answers=answers, detection_type='answer')
 
@@ -140,12 +140,12 @@ class ChatBot:
                     answer = self.detect_answer(self.curr_msg)
                     if answer and intent:
                         # print("" + answer)
-                        result.append((answer, 'text'))
+                        result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(intent))
                     elif answer:
                         # print("" + str(answer))
                         # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
-                        result.append((answer, 'text'))
+                        result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                     elif intent:
                         # result += self.handle_intent(intent)

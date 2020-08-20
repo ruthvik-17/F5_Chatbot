@@ -15,9 +15,6 @@ except LookupError:
     nltk.download("wordnet")
     from nltk.stem import WordNetLemmatizer
 
-# import these modules
-from nltk.stem import WordNetLemmatizer
-
 
 def clean_text_tokens(text):
     lemmatizer = WordNetLemmatizer()
