@@ -119,8 +119,8 @@ class ChatBot:
             #           "discover what would be a good fit for your specific use case?" + "" + "You can type yes/no."
             result.append(("Would you like to get in touch with the F5 team to "
                            "discover what would be a good fit for your specific use case?", 'text'))
-            result.append(('Yes!', 'button'))
-            result.append(('No.', 'button'))
+            result.append(('Yes', 'button'))
+            result.append(('No', 'button'))
 
             self.state = "sales"
         return result
