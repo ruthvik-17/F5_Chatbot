@@ -125,7 +125,7 @@ class ChatBot:
             self.state = "sales"
         return result
 
-    def get_response(self, text):
+    def get_response(self, text, browser):
         # if self.state == 0:
         #     self.greet()
         self.curr_msg = clean_text(text).strip()

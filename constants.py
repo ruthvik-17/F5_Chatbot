@@ -23,7 +23,11 @@ INTENT_DATA = {
             'Main menu',
             'Go to main menu',
             'I want to go to main menu',
-            'Back to main menu'
+            'Back to main menu',
+            'please go back to main menu',
+            'menu',
+            'back to main menu',
+            'back to menu'
         ]
     },
     "F5 Solutions": {
@@ -32,7 +36,9 @@ INTENT_DATA = {
             'F5 Solutions',
             'I want to know about F5 Solutions',
             'What solutions are offered by F5',
-            'What solutions are offered by you'
+            'What solutions are offered by you',
+            'What are your services',
+            'F5 services'
         ]
     },
     "Company information": {
@@ -49,13 +55,18 @@ INTENT_DATA = {
         'data': [
             'Load Balancing',
             'What is load balancing?',
-            'What are your load balancing solutions?'
+            'What are your load balancing solutions?',
+            'I want to know about F5 load balancing',
+            'I want to know about load balancer',
         ]
     },
     "Application security": {
         'number': 5,
         'data': [
-            'Application security'
+            'Application security',
+            'I want to know about application security',
+            'How to secure applications',
+            'What is F5 application security'
         ]
 
     }
