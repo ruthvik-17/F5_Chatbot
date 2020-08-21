@@ -1,6 +1,8 @@
 import random
 import re
 import pickle
+import json
+# import ast
 
 import pandas as pd
 # import numpy as np
@@ -25,6 +27,7 @@ class ChatBot:
         self.curr_msg = None
         self.menu = {}
         self.create_menu_graph()
+        self.browser = 'chrome'
         # print(self.menu)
 
         pk_file = open('final.pkl', 'rb')
@@ -95,6 +98,50 @@ class ChatBot:
         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
         return result
 
+    def get_order(self, sub_sections):
+        with open('data.json', "r") as f:
+            data = json.load(f)
+        f.close()
+        counts = {}
+        if self.browser in data:
+            # print(data)
+            # print(type(data))
+            for each in sub_sections:
+                intent = each.strip()
+                if intent in data[self.browser]:
+                    counts[intent] = data[self.browser][intent]
+                else:
+                    counts[intent] = 0
+        order = []
+        for i in sorted(counts.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
+            order.append(int(i[0]))
+        return order
+
+    def add_to_db(self, intent):
+        with open('data.json', "r") as f:
+            data = json.load(f)
+        f.close()
+        intent = str(intent).strip()
+        if self.browser in data:
+            if intent in data[self.browser]:
+                x = data[self.browser][intent]
+                data[self.browser][intent] = x + 1
+                print("x:", x)
+                print("updated data:", data)
+            else:
+                data[self.browser][intent] = 1
+        else:
+            data[self.browser] = {}
+            data[self.browser][intent] = 1
+
+        file = open("data.json", "r+")
+        file.truncate(0)
+        file.close()
+
+        with open('data.json', "w") as a:
+            json.dump(data, a)
+        a.close()
+
     def handle_intent(self, intent_num):
         """
 
@@ -111,9 +158,14 @@ class ChatBot:
                 # print("", each.strip())
 
         if sub_sections:
-            for each in sub_sections:
-                # result += "->" + self.menu[int(each.strip())]['name']
-                result.append((self.menu[int(each.strip())]['name'], 'button'))
+            order = self.get_order(sub_sections)
+            if order:
+                for i in order:
+                    result.append((self.menu[i]['name'], 'button'))
+            else:
+                for each in sub_sections:
+                    # result += "->" + self.menu[int(each.strip())]['name']
+                    result.append((self.menu[int(each.strip())]['name'], 'button'))
         else:
             # result += "Would you like to get in touch with the F5 team to " \
             #           "discover what would be a good fit for your specific use case?" + "" + "You can type yes/no."
@@ -128,6 +180,7 @@ class ChatBot:
     def get_response(self, text, browser):
         # if self.state == 0:
         #     self.greet()
+        self.browser = browser
         self.curr_msg = clean_text(text).strip()
         result = []
         if self.state == "intent":
@@ -140,6 +193,7 @@ class ChatBot:
                     answer = self.detect_answer(self.curr_msg)
                     if answer and intent:
                         # print("" + answer)
+                        self.add_to_db(intent)
                         result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(intent))
                     elif answer:
@@ -148,6 +202,7 @@ class ChatBot:
                         result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                     elif intent:
+                        self.add_to_db(intent)
                         # result += self.handle_intent(intent)
                         result.extend(self.handle_intent(intent))
                     else:
