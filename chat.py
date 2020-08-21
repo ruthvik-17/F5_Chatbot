@@ -27,7 +27,7 @@ class ChatBot:
         self.curr_msg = None
         self.menu = {}
         self.create_menu_graph()
-        self.browser = "chrome"
+        self.browser = 'chrome'
         # print(self.menu)
 
         pk_file = open('final.pkl', 'rb')
@@ -121,15 +121,23 @@ class ChatBot:
         with open('data.json', "r") as f:
             data = json.load(f)
         f.close()
+        intent = str(intent).strip()
         if self.browser in data:
             if intent in data[self.browser]:
                 x = data[self.browser][intent]
                 data[self.browser][intent] = x + 1
+                print("x:", x)
+                print("updated data:", data)
             else:
                 data[self.browser][intent] = 1
         else:
             data[self.browser] = {}
             data[self.browser][intent] = 1
+
+        file = open("data.json", "r+")
+        file.truncate(0)
+        file.close()
+
         with open('data.json', "w") as a:
             json.dump(data, a)
         a.close()
