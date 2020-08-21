@@ -17,39 +17,6 @@ def clean_text(text):
     return text
 
 
-def add_to_db(browser, intent):
-    with open('data.json', "r") as f:
-        data = json.load(f)
-    f.close()
-    if browser in data:
-        if intent in data[browser]:
-            x = data[browser][intent]
-            data[browser][intent] = x + 1
-        else:
-            data[browser][intent] = 1
-    else:
-        data[browser] = {}
-        data[browser][intent] = 1
-    with open('data.json', "w") as a:
-        json.dump(data, a)
-    a.close()
-
-    # with open('data.json') as f:
-    #     data = ast.literal_eval(json.load(f))
-    # if browser in data:
-    #     if intent in data[browser]:
-    #         x = data[browser][intent]
-    #         data[browser][intent] = x + 1
-    #     else:
-    #         data[browser][intent] = 1
-    # else:
-    #     data[browser] = {}
-    #     data[browser][intent] = 1
-    # data_json = json.dumps(data)
-    # with open('data.json', 'w') as f:
-    #     json.dump(data_json, f)
-
-
 class ChatBot:
     # All other functionalities are defined/called in this class.
 
@@ -146,9 +113,26 @@ class ChatBot:
                 else:
                     counts[intent] = 0
         order = []
-        for i in sorted(counts.items(), reverse=True):
+        for i in sorted(counts.items(), key=lambda kv: (kv[1], kv[0]), reverse=True):
             order.append(int(i[0]))
         return order
+
+    def add_to_db(self, intent):
+        with open('data.json', "r") as f:
+            data = json.load(f)
+        f.close()
+        if self.browser in data:
+            if intent in data[self.browser]:
+                x = data[self.browser][intent]
+                data[self.browser][intent] = x + 1
+            else:
+                data[self.browser][intent] = 1
+        else:
+            data[self.browser] = {}
+            data[self.browser][intent] = 1
+        with open('data.json', "w") as a:
+            json.dump(data, a)
+        a.close()
 
     def handle_intent(self, intent_num):
         """
@@ -201,7 +185,7 @@ class ChatBot:
                     answer = self.detect_answer(self.curr_msg)
                     if answer and intent:
                         # print("" + answer)
-                        add_to_db(self.browser, intent)
+                        self.add_to_db(intent)
                         result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(intent))
                     elif answer:
@@ -210,7 +194,7 @@ class ChatBot:
                         result.append((answer.capitalize() + '.', 'text'))
                         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                     elif intent:
-                        add_to_db(self.browser, intent)
+                        self.add_to_db(intent)
                         # result += self.handle_intent(intent)
                         result.extend(self.handle_intent(intent))
                     else:
