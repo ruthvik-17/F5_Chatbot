@@ -2,7 +2,9 @@ import random
 import re
 import pickle
 import json
-# import ast
+from nltk import ngrams
+from itertools import combinations
+from spello.model import SpellCorrectionModel
 
 import pandas as pd
 # import numpy as np
@@ -17,6 +19,41 @@ def clean_text(text):
     return text
 
 
+def get_ngrams(tokens, n):
+    return list(ngrams(tokens, n))
+
+
+def get_context_pairs(tokens, word):
+    """
+    For given list of tokens and word, return all pairs possible within window of 4 words of the given word,
+    ignore single letter word.
+    Args:
+        tokens (list): list of tokens
+        word (str): word for which we are searching for tokens
+    Returns:
+        (list): list of pairs with the given word in it
+    Examples:
+        >>> tokens, 'f5'
+        >>> get_context_pairs(['This', 'is', 'f5', 'networks', 'inc'])
+        [('This', 'f5'),
+         ('f5', 'inc'),
+         ('f5', 'networks'),
+         ('is', 'f5')]
+    """
+    data = []
+    n_grams = get_ngrams(tokens, 4)
+    if not n_grams:
+        n_grams = [tokens]
+    for ngrams_batch in n_grams:
+        for pair in combinations(ngrams_batch, 2):
+            # diff_index = abs(tokens.index(pair[0]) - abs(tokens.index(pair[1])))
+            if len(pair[0]) < 2 or len(pair[1]) < 2:
+                continue
+            if pair[0] == word or pair[1] == word:
+                data.append(pair)
+    return data
+
+
 class ChatBot:
     # All other functionalities are defined/called in this class.
 
@@ -29,6 +66,13 @@ class ChatBot:
         self.create_menu_graph()
         self.browser = 'chrome'
         # print(self.menu)
+        self.spell_check_model = SpellCorrectionModel(language='en')
+        self.domain_spell_check_model = SpellCorrectionModel(language='en')
+        self.spell_check_model.load('en.pkl')
+        self.domain_spell_check_model.load('custom_model.pkl')
+        with open('words.json') as f:
+            self.all_words = json.load(f)
+        f.close()
 
         pk_file = open('final.pkl', 'rb')
         answers = pickle.load(pk_file)
@@ -177,11 +221,46 @@ class ChatBot:
             self.state = "sales"
         return result
 
+    def check_domain_context(self, sentence, word):
+        pairs_list = get_context_pairs(sentence.lower().split(), word)
+        for each in pairs_list:
+            a = each in self.domain_spell_check_model.context_model.model_dict
+            b = (each[1], each[0]) in self.domain_spell_check_model.context_model.model_dict
+            if a or b:
+                return True
+        return False
+
+    def spell_check(self, text):
+        response = ""
+        final_suggestions_dict = {}
+        global_response = self.spell_check_model.spell_correct(text)
+        domain_response = self.domain_spell_check_model.spell_correct(text)
+        # print("Global_response", global_response)
+        # print("domain_response", domain_response)
+        for each in global_response['correction_dict']:
+            # if each in self.all_words:
+            #     continue
+            if each in domain_response['correction_dict']:
+                corrected_domain_each = domain_response['correction_dict'][each]
+                if self.check_domain_context(domain_response['spell_corrected_text'], corrected_domain_each):
+                    final_suggestions_dict[each] = corrected_domain_each
+                else:
+                    final_suggestions_dict[each] = global_response['correction_dict'][each]
+            # else:
+            #     final_suggestions_dict[each] = global_response['correction_dict'][each]
+        for each in global_response['original_text'].split():
+            if each in final_suggestions_dict:
+                response += final_suggestions_dict[each] + ' '
+            else:
+                response += each + ' '
+        return response.strip()
+
     def get_response(self, text, browser):
         # if self.state == 0:
         #     self.greet()
         self.browser = browser
-        self.curr_msg = clean_text(text).strip()
+        self.curr_msg = self.spell_check(text)
+        self.curr_msg = clean_text(self.curr_msg)
         result = []
         if self.state == "intent":
             if not self.exit:
