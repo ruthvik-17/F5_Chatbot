@@ -70,9 +70,9 @@ class ChatBot:
         self.domain_spell_check_model = SpellCorrectionModel(language='en')
         self.spell_check_model.load('en.pkl')
         self.domain_spell_check_model.load('custom_model.pkl')
-        with open('words.json') as f:
-            self.all_words = json.load(f)
-        f.close()
+        # with open('words.json') as f:
+        #     self.all_words = json.load(f)
+        # f.close()
 
         pk_file = open('final.pkl', 'rb')
         answers = pickle.load(pk_file)
