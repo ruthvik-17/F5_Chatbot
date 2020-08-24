@@ -22,7 +22,7 @@ pip install -r requirements.txt
 **language**|**model**|**size**|**md5 hash**
     :-----:|:-----:|:-----:|:-----:
     en|[en.pkl.zip](https://haptik-website-images.haptik.ai/spello\_models/en.pkl.zip)|84M|ec55760a7e25846bafe90b0c9ce9b09f
-6.. Move to project directory in cmd:
+6.  Move to project directory in cmd:
 ```
 cd F5_Chatbot
 ```
