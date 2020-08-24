@@ -18,15 +18,19 @@ f5_bot_venv\Scripts\activate
 ```
 pip install -r requirements.txt
 ```
-5. Move to project directory in cmd:
+5. Download, unzip and add en.pkl (Spell correction model) to the project directory
+**language**|**model**|**size**|**md5 hash**
+    :-----:|:-----:|:-----:|:-----:
+    en|[en.pkl.zip](https://haptik-website-images.haptik.ai/spello\_models/en.pkl.zip)|84M|ec55760a7e25846bafe90b0c9ce9b09f
+6.. Move to project directory in cmd:
 ```
 cd F5_Chatbot
 ```
-6. Run app.py:
+7. Run app.py:
 ```
 python app.py
 ```
-7. Test the chatbot on:
+8. Test the chatbot on:
 ```
 http://127.0.0.1:5000/
 ```
