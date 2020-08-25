@@ -69,5 +69,17 @@ INTENT_DATA = {
             'What is F5 application security'
         ]
 
+    },
+    "Support": {
+        'number': 6,
+        'data': [
+            'Support',
+            'I want to contact support',
+            'contact support',
+            'I need technical assistance',
+            'I want technical support',
+            'technical support'
+        ]
+
     }
 }
