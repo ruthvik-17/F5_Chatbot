@@ -27,12 +27,12 @@
         <div class="msg-bubble">
           <div class="msg-info">
             <div class="msg-info-name">F5 Assistant</div>
-            <div class="msg-info-time">12:45</div>
+            <div class="msg-info-time"></div>
           </div>
 
           <div class="msg-text">
             <script>botResponse("", "start");</script>
-<!--            Hello! What brings you here?-->
+            Hello! What brings you here?
           </div>
         </div>
       </div>
@@ -93,33 +93,42 @@
 
     function botResponse(rawText, command) {
       // Bot Response
-      $.get("/get", { msg: rawText, command: command }).done(function (data) {
+      if(command === "chat"){
+      $.get("/get", {msg: rawText, command: command}).done(function (data) {
         console.log(rawText);
         console.log(data);
         var text = "";
         var buttons = ``;
-        for(var key in data) {
-          if(data[key] === "button") {
+        for (var key in data) {
+          if (data[key] === "button") {
             buttons += `<div class="display-area"><button class="display-btn">${key}</button></div>`;
-          }
-          else {
+          } else {
             text += `<div class="msg-text"><br>${key}</div>`;
           }
         }
         const msgText = text + buttons;
         appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
         $(".display-btn").off("click");
-        $(".display-btn").click( function () {
-              console.log("Clicked");
-              const msgText = this.textContent;
+        $(".display-btn").click(function () {
+          console.log("Clicked");
+          const msgText = this.textContent;
 
-              const textHTML = `<div class="msg-text">${msgText}</div>`;
-              appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
-              botResponse(msgText, "chat");
+          const textHTML = `<div class="msg-text">${msgText}</div>`;
+          appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
+          botResponse(msgText, "chat");
         });
       });
-      if(command === "start"){
-        return  rawText
+      }
+      else if(command === "start"){
+        var result = ""
+        $.get("/get", {msg: rawText, command: command}).done(function (data) {
+        console.log(rawText);
+        console.log(data);
+        for(var key in data){
+          result = key
+        }
+        });
+        return result;
       }
     }
 

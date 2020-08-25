@@ -90,13 +90,22 @@ class ChatBot:
                 intent_answers.append((clean_text(i), INTENT_DATA[each]['number']))
         self.intent_detector = Detection(answers=intent_answers, detection_type='intent')
 
+        port = 465  # For SSL
+        smtp_server = "smtp.gmail.com"
+        self.sender_email = "f5.demochatcustomer@gmail.com"
+        self.receiver_email = "f5.demochatsup@gmail.com"
+        password = "ruthvik@sl"
+        context = ssl.create_default_context()
+        self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+        self.server.login(self.sender_email, password)
+
     def greet(self):
         self.state = 'intent'
         result = []
         if self.db[self.browser]["name"]:
             greet_msg = "Hello " + self.db[self.browser]["name"] + "! What brings you back?"
         else:
-            greet_msg = random.choice(GREETING_PHRASE_1) + random.choice(GREETING_PHRASE_2)
+            greet_msg = random.choice(GREETING_PHRASE_1) + " " + random.choice(GREETING_PHRASE_2)
         result.append((greet_msg, "text"))
         return result
 
@@ -121,7 +130,7 @@ class ChatBot:
         question, answer, score = self.answer_detector.process_results(query)
         # print("question:", question, " detected  answer:", answer, ", score:", score)
         if score > 0.7:
-            return answer
+            return "<strong>Answer: </strong>" + answer.capitalize()
         else:
             return False
 
@@ -136,13 +145,15 @@ class ChatBot:
         if self.state == "sales":
             if response.strip(r'.').lower() in ['yes', 'okay', 'sure']:
                 if self.db[self.browser]["email"] and self.db[self.browser]["name"]:
-                    result.append(("Please provide a summary of your"
+                    result.append(("Customer email id and name are already present.", "text"))
+                    result.append(("Please provide a summary of your "
                                    "requirement for our executive to have some context beforehand.", "text"))
                     self.state = "get_summary"
                     return result
                 elif self.db[self.browser]["email"]:
                     self.state = "get_name"
-                    return result.append(("Please provide you name", "text"))
+                    result.append(("Customer email id is already in our database.", "text"))
+                    return result.append(("Please provide you name.", "text"))
                 # print("Okay, please provide your work e-mail id.")
                 result.append(("Okay, please provide your work e-mail id.", "text"))
                 self.state = "get_mail"
@@ -153,9 +164,13 @@ class ChatBot:
             if email:
                 # self.send_mail(email)
                 # print("Mail noted. Our sales executive will contact you.")
-                self.add_to_db(email, "email")
+                self.add_to_db(email[0], "email")
+                print("check pt 1")
                 self.state = "get_name"
-                result.append(("Mail noted. Please provide your name..", "text"))
+                print("check pt 2")
+                result.append(("Mail noted. Please provide your name.", "text"))
+                print("check pt 3 result: ", result)
+                return result
             else:
                 # self.state = "intent"
                 # print("Email not found.")
@@ -166,13 +181,13 @@ class ChatBot:
                 # self.send_mail(email)
                 # print("Mail noted. Our sales executive will contact you.")
                 self.add_to_db(name, "name")
-                result.append(("Name noted. Last thing, please provide a summary of your"
+                result.append(("Name noted. Last thing, please provide a summary of your "
                                "requirement for our executive to have some context beforehand.", "text"))
                 self.state = "get_summary"
                 return result
             else:
                 # print("Email not found.")
-                result.append(("Name not found.", "text"))
+                return result.append(("Name not found.", "text"))
         elif self.state == "get_summary":
             summary = response
             self.state = "intent"
@@ -195,13 +210,8 @@ class ChatBot:
 
     def send_mail(self, summary):
 
-        port = 465  # For SSL
-        smtp_server = "smtp.gmail.com"
-        sender_email = "f5.demochatcustomer@gmail.com"
-        receiver_email = "f5.demochatsup@gmail.com"
-        password = "ruthvik@sl"
         message = f"""\
-        Subject: Customer ticket #147007
+        Subject: Customer ticket #147007.
 
 
         We got the following customer ticket through our website chatbot. Please look in to it.
@@ -213,11 +223,10 @@ class ChatBot:
         Thanks and regards,
         Chatbot team.
         """
-
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-            server.login(sender_email, password)
-            server.sendmail(sender_email, receiver_email, message)
+        # context = ssl.create_default_context()
+        # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        #     server.login(sender_email, password)
+        self.server.sendmail(self.sender_email, self.receiver_email, message)
         return True
 
     def get_order(self, sub_sections):
@@ -343,17 +352,20 @@ class ChatBot:
         self.browser = browser
         if self.browser not in self.db:
             self.db[self.browser] = {"history": {}, "name": "", "email": ""}
+        with open('data.json', "w") as a:
+            json.dump(self.db, a)
+        a.close()
 
     def get_response(self, text, browser, command):
         # if self.state == 0:
         #     self.greet()
-        if command == "greet":
-            self.greet()
+        result = []
+        if command == "start":
+            result.extend(self.greet())
         else:
             self.browser = browser
             self.curr_msg = self.spell_check(text)
             self.curr_msg = clean_text(self.curr_msg)
-            result = []
             if self.curr_msg not in STOP_CHAT:
                 if self.state == "intent":
                     if not self.exit:
@@ -371,12 +383,12 @@ class ChatBot:
                         elif answer and intent:
                             # print("" + answer)
                             self.add_to_db(intent, "intent")
-                            result.append((answer.capitalize() + '.', 'text'))
+                            result.append((answer + '.', 'text'))
                             result.extend(self.handle_intent(intent))
                         elif answer:
                             # print("" + str(answer))
                             # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
-                            result.append((answer.capitalize() + '.', 'text'))
+                            result.append((answer + '.', 'text'))
                             result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
                         elif intent:
                             self.add_to_db(intent, "intent")
@@ -405,4 +417,4 @@ class ChatBot:
                 self.exit = False
                 return [("Good bye.", "text")]
 
-            return result
+        return result

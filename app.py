@@ -10,8 +10,8 @@ chat_instance = ChatBot()
 
 
 @app.route("/")
-@app.route('//<name>')
-def home(command = "start"):
+# @app.route('//<name>')
+def home(command="start"):
     # if chat_instance.db[browser]["name"]:
     #     greet_msg = "Hello " + chat_instance.db[browser]["name"] + "! What brings you back?"
     # else:
