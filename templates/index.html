@@ -31,7 +31,8 @@
           </div>
 
           <div class="msg-text">
-            Hello! What brings you here?
+            <script>botResponse("", "start");</script>
+<!--            Hello! What brings you here?-->
           </div>
         </div>
       </div>
@@ -66,7 +67,7 @@
       const textHTML = `<div class="msg-text">${msgText}</div>`
       appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
       msgerInput.value = "";
-      botResponse(msgText);
+      botResponse(msgText, "chat");
     });
 
     function appendMessage(name, img, side, text) {
@@ -90,16 +91,15 @@
       msgerChat.scrollTop += 500;
     }
 
-    function botResponse(rawText) {
-
+    function botResponse(rawText, command) {
       // Bot Response
-      $.get("/get", { msg: rawText }).done(function (data) {
+      $.get("/get", { msg: rawText, command: command }).done(function (data) {
         console.log(rawText);
         console.log(data);
         var text = "";
         var buttons = ``;
         for(var key in data) {
-          if(data[key] == "button") {
+          if(data[key] === "button") {
             buttons += `<div class="display-area"><button class="display-btn">${key}</button></div>`;
           }
           else {
@@ -115,10 +115,12 @@
 
               const textHTML = `<div class="msg-text">${msgText}</div>`;
               appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
-              botResponse(msgText);
+              botResponse(msgText, "chat");
         });
       });
-
+      if(command === "start"){
+        return  rawText
+      }
     }
 
 
