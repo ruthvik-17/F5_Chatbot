@@ -1,12 +1,15 @@
+import json
+import pickle
 import random
 import re
-import pickle
-import json
-from nltk import ngrams
+import smtplib
+import ssl
 from itertools import combinations
-from spello.model import SpellCorrectionModel
 
 import pandas as pd
+from nltk import ngrams
+from spello.model import SpellCorrectionModel
+
 # import numpy as np
 # import re
 from constants import GREETING_PHRASE_1, GREETING_PHRASE_2, STOP_CHAT, INTENT_DATA
@@ -70,6 +73,9 @@ class ChatBot:
         self.domain_spell_check_model = SpellCorrectionModel(language='en')
         self.spell_check_model.load('en.pkl')
         self.domain_spell_check_model.load('custom_model.pkl')
+        with open('data.json', "r") as f:
+            self.db = json.load(f)
+        f.close()
         # with open('words.json') as f:
         #     self.all_words = json.load(f)
         # f.close()
@@ -84,9 +90,24 @@ class ChatBot:
                 intent_answers.append((clean_text(i), INTENT_DATA[each]['number']))
         self.intent_detector = Detection(answers=intent_answers, detection_type='intent')
 
+        port = 465  # For SSL
+        smtp_server = "smtp.gmail.com"
+        self.sender_email = "f5.demochatcustomer@gmail.com"
+        self.receiver_email = "f5.demochatsup@gmail.com"
+        password = "ruthvik@sl"
+        context = ssl.create_default_context()
+        self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+        self.server.login(self.sender_email, password)
+
     def greet(self):
         self.state = 'intent'
-        return random.choice(GREETING_PHRASE_1) + random.choice(GREETING_PHRASE_2)
+        result = []
+        if self.db[self.browser]["name"]:
+            greet_msg = "Hello " + self.db[self.browser]["name"] + "! What brings you back?"
+        else:
+            greet_msg = random.choice(GREETING_PHRASE_1) + " " + random.choice(GREETING_PHRASE_2)
+        result.append((greet_msg, "text"))
+        return result
 
     def create_menu_graph(self):
         data = pd.read_csv("menu.csv", index_col=0, header=0, encoding='utf-8')
@@ -109,7 +130,7 @@ class ChatBot:
         question, answer, score = self.answer_detector.process_results(query)
         # print("question:", question, " detected  answer:", answer, ", score:", score)
         if score > 0.7:
-            return answer
+            return "<strong>Answer: </strong>" + answer.capitalize()
         else:
             return False
 
@@ -120,27 +141,95 @@ class ChatBot:
         # response = input("user: ")
         response = text
         result = []
+
         if self.state == "sales":
             if response.strip(r'.').lower() in ['yes', 'okay', 'sure']:
+                if self.db[self.browser]["email"] and self.db[self.browser]["name"]:
+                    result.append(("Customer email id and name are already present.", "text"))
+                    result.append(("Please provide a summary of your "
+                                   "requirement for our executive to have some context beforehand.", "text"))
+                    self.state = "get_summary"
+                    return result
+                elif self.db[self.browser]["email"]:
+                    self.state = "get_name"
+                    result.append(("Customer email id is already in our database.", "text"))
+                    return result.append(("Please provide you name.", "text"))
                 # print("Okay, please provide your work e-mail id.")
-                result.append(("Okay, please provide your work e-mail id.", "text"))
+                result.append(("Please provide your work e-mail id.", "text"))
                 self.state = "get_mail"
                 return result
         elif self.state == "get_mail":
             email = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', response)
-            self.state = "intent"
+
             if email:
                 # self.send_mail(email)
                 # print("Mail noted. Our sales executive will contact you.")
-                result.append(("Mail noted. Our sales executive will contact you.", "text"))
+                self.add_to_db(email[0], "email")
+                self.state = "get_name"
+                if self.db[self.browser]["name"]:
+                    result.append(("Mail noted and Name is present in our database.", "text"))
+                    result.append(("Last thing, please provide a summary of your "
+                                   "requirement for our executive to have some context beforehand.", "text"))
+                else:
+                    result.append(("Mail noted. Please provide your name.", "text"))
+                return result
+            else:
+                # self.state = "intent"
+                # print("Email not found.")
+                return result.append(("Email not found. Lets try that again.", "text"))
+        elif self.state == "get_name":
+            name = response
+            if name:
+                # self.send_mail(email)
+                # print("Mail noted. Our sales executive will contact you.")
+                self.add_to_db(name, "name")
+                result.append(("Name noted. Last thing, please provide a summary of your "
+                               "requirement for our executive to have some context beforehand.", "text"))
+                self.state = "get_summary"
+                return result
             else:
                 # print("Email not found.")
-                result.append(("Email not found.", "text"))
+                return result.append(("Name not found.", "text"))
+        elif self.state == "get_summary":
+            summary = response
+            self.state = "intent"
+            if summary:
+                # self.send_mail(email)
+                # print("Mail noted. Our sales executive will contact you.")
+                # self.add_to_db(summa, "name")
+                if self.send_mail(summary):
+                    result.append(("Summary noted. Our executive has been notified and "
+                                   "will contact you soon. Thank you.", "text"))
+                # send email to support staff
+            else:
+                # print("Email not found.")
+                result.append(("Summary not found.", "text"))
         # result.append(("Okay. Back to main menu.", "text"))
         # print("Okay. Back to main menu.")
         self.state = 'intent'
         result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
         return result
+
+    def send_mail(self, summary):
+
+        message = f"""\
+        Subject: Customer ticket #147007.
+
+
+        We got the following customer ticket through our website chatbot. Please look in to it.
+
+        Name: {self.db[self.browser]["name"] if self.db[self.browser]["name"] else "Not provided"}
+        email: {self.db[self.browser]["email"]}
+        Summary: {summary}
+
+        Thanks and regards,
+        Chatbot team.
+        """
+        # context = ssl.create_default_context()
+        # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        #     server.login(sender_email, password)
+        self.server.sendmail(self.sender_email, self.receiver_email, message)
+        return True
 
     def get_order(self, sub_sections):
         with open('data.json', "r") as f:
@@ -149,11 +238,10 @@ class ChatBot:
         counts = {}
         if self.browser in data:
             # print(data)
-            # print(type(data))
             for each in sub_sections:
                 intent = each.strip()
-                if intent in data[self.browser]:
-                    counts[intent] = data[self.browser][intent]
+                if intent in data[self.browser]["history"]:
+                    counts[intent] = data[self.browser]["history"][intent]
                 else:
                     counts[intent] = 0
         order = []
@@ -161,29 +249,36 @@ class ChatBot:
             order.append(int(i[0]))
         return order
 
-    def add_to_db(self, intent):
+    def add_to_db(self, command_data, command):
         with open('data.json', "r") as f:
-            data = json.load(f)
+            self.db = json.load(f)
         f.close()
-        intent = str(intent).strip()
-        if self.browser in data:
-            if intent in data[self.browser]:
-                x = data[self.browser][intent]
-                data[self.browser][intent] = x + 1
-                print("x:", x)
-                print("updated data:", data)
-            else:
-                data[self.browser][intent] = 1
-        else:
-            data[self.browser] = {}
-            data[self.browser][intent] = 1
 
         file = open("data.json", "r+")
         file.truncate(0)
         file.close()
 
+        command_data = str(command_data).strip()
+        if command == "intent":
+            if self.browser in self.db:
+                if command_data in self.db[self.browser]["history"]:
+                    x = self.db[self.browser]["history"][command_data]
+                    self.db[self.browser]["history"][command_data] = x + 1
+                    print("x:", x)
+                    print("updated data:", self.db)
+                else:
+                    self.db[self.browser]["history"][command_data] = 1
+            else:
+                self.db[self.browser] = {"history": {}, "name": "", "email": ""}
+                self.db[self.browser]["history"][command_data] = 1
+
+        elif command == "name":
+            self.db[self.browser]["name"] = command_data
+        elif command == "email":
+            self.db[self.browser]["email"] = command_data
+
         with open('data.json', "w") as a:
-            json.dump(data, a)
+            json.dump(self.db, a)
         a.close()
 
     def handle_intent(self, intent_num):
@@ -255,51 +350,73 @@ class ChatBot:
                 response += each + ' '
         return response.strip()
 
-    def get_response(self, text, browser):
+    def initialize(self, browser):
+        self.browser = browser
+        if self.browser not in self.db:
+            self.db[self.browser] = {"history": {}, "name": "", "email": ""}
+        with open('data.json', "w") as a:
+            json.dump(self.db, a)
+        a.close()
+
+    def get_response(self, text, browser, command):
         # if self.state == 0:
         #     self.greet()
-        self.browser = browser
-        self.curr_msg = self.spell_check(text)
-        self.curr_msg = clean_text(self.curr_msg)
         result = []
-        if self.state == "intent":
-            if not self.exit:
-                # text = input("user:")
-                # text = re.sub(r'[\'\"?]', '', text)
-                # text = re.sub(r'[\.\s]', r' ', text.lower())
-                if self.curr_msg not in STOP_CHAT:
-                    intent = self.detect_intent(self.curr_msg)
-                    answer = self.detect_answer(self.curr_msg)
-                    if answer and intent:
-                        # print("" + answer)
-                        self.add_to_db(intent)
-                        result.append((answer.capitalize() + '.', 'text'))
-                        result.extend(self.handle_intent(intent))
-                    elif answer:
-                        # print("" + str(answer))
-                        # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
-                        result.append((answer.capitalize() + '.', 'text'))
-                        result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
-                    elif intent:
-                        self.add_to_db(intent)
-                        # result += self.handle_intent(intent)
-                        result.extend(self.handle_intent(intent))
-                    else:
-                        result.append(("Sorry, I did not understand that.", "text"))
-                        result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
-                        # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
-                else:
-                    self.exit = True
-        elif self.state == "sales":
-            result.extend(self.handle_sales(self.curr_msg))
-            # result += self.handle_sales(self.curr_msg)
-        elif self.state == "get_mail":
-            result.extend(self.handle_sales(text))
-            # result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
-            # result += self.handle_sales(text)
-            # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
-        if self.exit:
-            self.exit = False
-            return [("Good bye.", "text")]
+        if command == "start":
+            result.extend(self.greet())
+        else:
+            self.browser = browser
+            self.curr_msg = self.spell_check(text)
+            self.curr_msg = clean_text(self.curr_msg)
+            if self.curr_msg not in STOP_CHAT:
+                if self.state == "intent":
+                    if not self.exit:
+                        # text = input("user:")
+                        # text = re.sub(r'[\'\"?]', '', text)
+                        # text = re.sub(r'[\.\s]', r' ', text.lower())
+                        # if self.curr_msg not in STOP_CHAT:
+                        intent = self.detect_intent(self.curr_msg)
+                        answer = self.detect_answer(self.curr_msg)
+                        if intent == 6:
+                            # support request
+                            result.append(("A support assistant will contact you soon.", "text"))
+                            self.state = "sales"
+                            result.extend(self.handle_sales("yes"))
+                        elif answer and intent:
+                            # print("" + answer)
+                            self.add_to_db(intent, "intent")
+                            result.append((answer + '.', 'text'))
+                            result.extend(self.handle_intent(intent))
+                        elif answer:
+                            # print("" + str(answer))
+                            # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                            result.append((answer + '.', 'text'))
+                            result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
+                        elif intent:
+                            self.add_to_db(intent, "intent")
+                            # result += self.handle_intent(intent)
+                            result.extend(self.handle_intent(intent))
+                        else:
+                            result.append(("Sorry, I did not understand that.", "text"))
+                            result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
+                            # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                elif self.state == "sales":
+                    result.extend(self.handle_sales(self.curr_msg))
+                    # result += self.handle_sales(self.curr_msg)
+                elif self.state == "get_mail":
+                    result.extend(self.handle_sales(text))
+                    # result.extend(self.handle_intent(INTENT_DATA['Main menu']['number']))
+                    # result += self.handle_sales(text)
+                    # result += self.handle_intent(INTENT_DATA['Main menu']['number'])
+                elif self.state == "get_name":
+                    result.extend(self.handle_sales(text))
+                elif self.state == "get_summary":
+                    result.extend(self.handle_sales(text))
+            else:
+                self.exit = True
+
+            if self.exit:
+                self.exit = False
+                return [("Good bye.", "text")]
 
         return result
