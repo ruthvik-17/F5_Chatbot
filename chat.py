@@ -264,8 +264,8 @@ class ChatBot:
                 if command_data in self.db[self.browser]["history"]:
                     x = self.db[self.browser]["history"][command_data]
                     self.db[self.browser]["history"][command_data] = x + 1
-                    print("x:", x)
-                    print("updated data:", self.db)
+                    # print("x:", x)
+                    # print("updated data:", self.db)
                 else:
                     self.db[self.browser]["history"][command_data] = 1
             else:
