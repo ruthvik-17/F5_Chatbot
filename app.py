@@ -28,12 +28,13 @@ def get_bot_response():
     response = chat_instance.get_response(user_msg, browser, command)
     return OrderedDict(response)
 
-
-@app.route("/get_greet_msg", methods=['POST'])
-def get_greet_msg():
-    browser = request.user_agent.browser
-    if request.method == 'POST':
-        return jsonify(chat_instance.get_response("", browser, "start")[0][0])
+#
+# @app.route("/get_greet_msg", methods=['POST'])
+# def get_greet_msg():
+#     browser = request.user_agent.browser
+#     if request.method == 'POST':
+#         return jsonify("hejffkjfk")
+#         # return jsonify(chat_instance.get_response("", browser, "start")[0][0])
 
 
 if __name__ == "__main__":
