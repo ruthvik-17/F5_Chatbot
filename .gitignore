@@ -14,3 +14,4 @@ __pycache__/constants.cpython-36.pyc
 __pycache__/detection.cpython-36.pyc
 en.pkl
 en_large.pkl
+.idea
