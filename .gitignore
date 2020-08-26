@@ -1,0 +1,17 @@
+"Untitled.ipynb"
+"en.pkl"
+"en_large.pkl".idea/.gitignore
+.idea/F5_Chatbot.iml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
+Untitled.ipynb
+__pycache__/chat.cpython-36.pyc
+__pycache__/constants.cpython-36.pyc
+__pycache__/detection.cpython-36.pyc
+en.pkl
+en_large.pkl
+.idea
