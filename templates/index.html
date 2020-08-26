@@ -31,8 +31,9 @@
           </div>
 
           <div class="msg-text">
-            <script>botResponse("", "start");</script>
-            Hello! What brings you here?
+            ${<script>get_greet_msg();</script>}
+<!--            Hello! What brings you here?-->
+<!--            ${get_greet_msg()}-->
           </div>
         </div>
       </div>
@@ -145,7 +146,22 @@
       return `${h.slice(-2)}:${m.slice(-2)}`;
     }
 
-
+    function get_greet_msg() {
+      var msgText = ""
+      $.ajax({
+        type: "POST",
+        url: '/get_greet_msg',
+        dataType: "json",
+        data: JSON.stringify(),
+        contentType: 'application/json;charset=UTF-8',
+        success: function (data) {
+          console.log(data);
+          msgText = data;
+          appendMessage(BOT_NAME, BOT_IMG, "left", msgText)
+        }
+      });
+    return msgText;
+    }
 
   </script>
 

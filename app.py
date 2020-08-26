@@ -1,6 +1,6 @@
 from chat import ChatBot
 from collections import OrderedDict
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 app.static_folder = 'static'
@@ -27,6 +27,13 @@ def get_bot_response():
     command = request.args.get('command')
     response = chat_instance.get_response(user_msg, browser, command)
     return OrderedDict(response)
+
+
+@app.route("/get_greet_msg", methods=['POST'])
+def get_greet_msg():
+    browser = request.user_agent.browser
+    if request.method == 'POST':
+        return jsonify(chat_instance.get_response("", browser, "start")[0][0])
 
 
 if __name__ == "__main__":
