@@ -155,7 +155,7 @@ class ChatBot:
                     result.append(("Customer email id is already in our database.", "text"))
                     return result.append(("Please provide you name.", "text"))
                 # print("Okay, please provide your work e-mail id.")
-                result.append(("Okay, please provide your work e-mail id.", "text"))
+                result.append(("Please provide your work e-mail id.", "text"))
                 self.state = "get_mail"
                 return result
         elif self.state == "get_mail":
@@ -165,11 +165,13 @@ class ChatBot:
                 # self.send_mail(email)
                 # print("Mail noted. Our sales executive will contact you.")
                 self.add_to_db(email[0], "email")
-                print("check pt 1")
                 self.state = "get_name"
-                print("check pt 2")
-                result.append(("Mail noted. Please provide your name.", "text"))
-                print("check pt 3 result: ", result)
+                if self.db[self.browser]["name"]:
+                    result.append(("Mail noted and Name is present in our database.", "text"))
+                    result.append(("Last thing, please provide a summary of your "
+                                   "requirement for our executive to have some context beforehand.", "text"))
+                else:
+                    result.append(("Mail noted. Please provide your name.", "text"))
                 return result
             else:
                 # self.state = "intent"

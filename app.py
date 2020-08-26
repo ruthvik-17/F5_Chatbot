@@ -33,7 +33,7 @@ def get_bot_response():
 # def get_greet_msg():
 #     browser = request.user_agent.browser
 #     if request.method == 'POST':
-#         return jsonify("hejffkjfk")
+#         return jsonify("")
 #         # return jsonify(chat_instance.get_response("", browser, "start")[0][0])
 
 
