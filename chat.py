@@ -228,7 +228,18 @@ class ChatBot:
         # context = ssl.create_default_context()
         # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
         #     server.login(sender_email, password)
-        self.server.sendmail(self.sender_email, self.receiver_email, message)
+        try:
+            self.server.sendmail(self.sender_email, self.receiver_email, message)
+        except:
+            port = 465  # For SSL
+            smtp_server = "smtp.gmail.com"
+            self.sender_email = "f5.demochatcustomer@gmail.com"
+            self.receiver_email = "f5.demochatsup@gmail.com"
+            password = "ruthvik@sl"
+            context = ssl.create_default_context()
+            self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+            self.server.login(self.sender_email, password)
+            self.server.sendmail(self.sender_email, self.receiver_email, message)
         return True
 
     def get_order(self, sub_sections):
