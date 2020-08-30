@@ -21,21 +21,6 @@
     </header>
 
     <main class="msger-chat">
-      <div class="msg left-msg">
-        <div class="msg-img" style="background-image: url(https://image.flaticon.com/icons/svg/327/327779.svg)"></div>
-
-        <div class="msg-bubble">
-          <div class="msg-info">
-            <div class="msg-info-name">F5 Assistant</div>
-            <div class="msg-info-time"></div>
-          </div>
-
-          <div class="msg-text">
-            <script>botResponse("", "start");</script>
-            Hello! What brings you here?
-          </div>
-        </div>
-      </div>
 
     </main>
 
@@ -70,6 +55,7 @@
       botResponse(msgText, "chat");
     });
 
+    botResponse("", "start");
     function appendMessage(name, img, side, text) {
       //   Simple solution for small apps
       const msgHTML = `
