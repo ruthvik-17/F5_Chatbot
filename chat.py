@@ -10,7 +10,6 @@ import pandas as pd
 from nltk import ngrams
 from spello.model import SpellCorrectionModel
 
-# import numpy as np
 # import re
 from constants import GREETING_PHRASE_1, GREETING_PHRASE_2, STOP_CHAT, INTENT_DATA
 from detection import Detection
