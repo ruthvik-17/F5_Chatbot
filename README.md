@@ -1,5 +1,10 @@
 # F5_Chatbot
 An experimental chatbot for F5 Networks.
+
+### About the project:
+Chatbot built with intent detection, question answering, and spell correction capabilities packed with
+a GUI to be able to run on a local machine.
+
 ### Commands to test:
 1. Clone this repository:
 ```
