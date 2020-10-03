@@ -127,6 +127,7 @@ class ChatBot:
         return intent
 
     def detect_answer(self, query):
+        #  detect answer from a given question
         question, answer, score = self.answer_detector.process_results(query)
         # print("question:", question, " detected  answer:", answer, ", score:", score)
         if score > 0.7:
