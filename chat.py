@@ -232,9 +232,10 @@ class ChatBot:
         except:
             port = 465  # For SSL
             smtp_server = "smtp.gmail.com"
-            self.sender_email = "f5.demochatcustomer@gmail.com"
-            self.receiver_email = "f5.demochatsup@gmail.com"
-            password = "ruthvik@sl"
+            # belowe are fake mail credentials, using credentials saved in .env files is suggested. Cheers.
+            self.sender_email = "demochat@gmail.com"
+            self.receiver_email = "demochatsup@gmail.com"
+            password = "yourpassword"
             context = ssl.create_default_context()
             self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
             self.server.login(self.sender_email, password)
