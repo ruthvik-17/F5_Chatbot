@@ -22,7 +22,13 @@ def clean_text_tokens(text):
     text = re.sub(r'[.\s]', r' ', text)
     tokens = []
     # tokens = re.split(r'[^a-zA-Z0-9.\-]', text.lower())
-    w = word_tokenize(text)
+    
+    try:
+        w = word_tokenize(text)
+    except LookupError:
+        nltk.download("punkt")
+        w = word_tokenize(text)
+        
     for i in w:
         tokens.append(lemmatizer.lemmatize(i.lower()))
     return tokens
