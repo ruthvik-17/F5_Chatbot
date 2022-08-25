@@ -2,6 +2,8 @@ import math
 import re
 import nltk
 from nltk.tokenize import word_tokenize
+
+nltk.download('omw-1.4')
 nltk.download("stopwords")
 nltk.download("wordnet")
 nltk.download("punkt")
