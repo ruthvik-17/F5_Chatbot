@@ -1,4 +1,4 @@
-Flask==1.1.2
+Flask
 nltk==3.6.6
 pandas~=1.0.4
 spello~=1.2.0
