@@ -3,10 +3,10 @@ import re
 import nltk
 from nltk.tokenize import word_tokenize
 
-nltk.download('omw-1.4')
-nltk.download("stopwords")
-nltk.download("wordnet")
-nltk.download("punkt")
+nltk.download('omw-1.4', , download_dir='/usr/share/nltk_data')
+nltk.download("stopwords", , download_dir='/usr/share/nltk_data')
+nltk.download("wordnet", , download_dir='/usr/share/nltk_data')
+nltk.download("punkt", , download_dir='/usr/share/nltk_data')
 
 
 try:
