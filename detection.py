@@ -3,10 +3,6 @@ import re
 import nltk
 from nltk.tokenize import word_tokenize
 
-import os
-
-os.environ["NLTK_DATA"] = "/tmp/nltk_data"
-
 nltk.download('omw-1.4', download_dir='/tmp/nltk_data')
 nltk.download("stopwords", download_dir='/tmp/nltk_data')
 nltk.download("wordnet", download_dir='/tmp/nltk_data')
