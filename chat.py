@@ -211,35 +211,44 @@ class ChatBot:
 
     def send_mail(self, summary):
 
-        message = f"""\
-        Subject: Customer ticket #147007.
+        # message = f"""\
+        # Subject: Customer ticket #147007.
 
 
-        We got the following customer ticket through our website chatbot. Please look in to it.
+        # We got the following customer ticket through our website chatbot. Please look in to it.
 
-        Name: {self.db[self.browser]["name"] if self.db[self.browser]["name"] else "Not provided"}
-        email: {self.db[self.browser]["email"]}
-        Summary: {summary}
+        # Name: {self.db[self.browser]["name"] if self.db[self.browser]["name"] else "Not provided"}
+        # email: {self.db[self.browser]["email"]}
+        # Summary: {summary}
 
-        Thanks and regards,
-        Chatbot team.
-        """
-        # context = ssl.create_default_context()
-        # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        #     server.login(sender_email, password)
-        try:
-            self.server.sendmail(self.sender_email, self.receiver_email, message)
-        except:
-            port = 465  # For SSL
-            smtp_server = "smtp.gmail.com"
-            # belowe are fake mail credentials, using credentials saved in .env files is suggested. Cheers.
-            self.sender_email = "demochat@gmail.com"
-            self.receiver_email = "demochatsup@gmail.com"
-            password = "yourpassword"
-            context = ssl.create_default_context()
-            self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
-            self.server.login(self.sender_email, password)
-            self.server.sendmail(self.sender_email, self.receiver_email, message)
+        # Thanks and regards,
+        # Chatbot team.
+        # """
+        # # context = ssl.create_default_context()
+        # # with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        # #     server.login(sender_email, password)
+        # try:
+        #     self.server.sendmail(self.sender_email, self.receiver_email, message)
+        # except:
+        #     # port = 465  # For SSL
+        #     # smtp_server = "smtp.gmail.com"
+        #     # # belowe are fake mail credentials, using credentials saved in .env files is suggested. Cheers.
+        #     # self.sender_email = "demochat@gmail.com"
+        #     # self.receiver_email = "demochatsup@gmail.com"
+        #     # password = "yourpassword"
+        #     # context = ssl.create_default_context()
+        #     # self.server = smtplib.SMTP_SSL(smtp_server, port, context=context
+
+        #     port = 465  # For SSL
+        #     smtp_server = "smtp.gmail.com"
+        #     self.sender_email = "dev.abhyas@gmail.com"
+        #     self.receiver_email = "f20160034@hyderabad.bits-pilani.ac.in"
+        #     password = "AbhyasSharedPass"
+        #     context = ssl.create_default_context()
+        #     self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+
+        #     self.server.login(self.sender_email, password)
+        #     self.server.sendmail(self.sender_email, self.receiver_email, message)
         return True
 
     def get_order(self, sub_sections):
