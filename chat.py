@@ -88,14 +88,14 @@ class ChatBot:
                 intent_answers.append((clean_text(i), INTENT_DATA[each]['number']))
         self.intent_detector = Detection(answers=intent_answers, detection_type='intent')
 
-        port = 465  # For SSL
-        smtp_server = "smtp.gmail.com"
-        self.sender_email = "dev.abhyas@gmail.com"
-        self.receiver_email = "f20160034@hyderabad.bits-pilani.ac.in"
-        password = "AbhyasSharedPass"
-        context = ssl.create_default_context()
-        self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
-        # self.server.login(self.sender_email, password)
+        # port = 465  # For SSL
+        # smtp_server = "smtp.gmail.com"
+        # self.sender_email = "dev.abhyas@gmail.com"
+        # self.receiver_email = "f20160034@hyderabad.bits-pilani.ac.in"
+        # password = "AbhyasSharedPass"
+        # context = ssl.create_default_context()
+        # self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
+        # # self.server.login(self.sender_email, password)
 
     def greet(self):
         self.state = 'intent'
