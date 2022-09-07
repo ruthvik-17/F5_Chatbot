@@ -39,7 +39,7 @@
 
     // Icons made by Freepik from www.flaticon.com
     const BOT_IMG = "https://cdn-icons-png.flaticon.com/512/6569/6569264.png";
-    
+
     // //red
     // const BOT_IMG = "https://cdn-icons-png.flaticon.com/512/3273/3273828.png";
     const PERSON_IMG = "https://cdn-icons-png.flaticon.com/512/1177/1177568.png";
@@ -71,7 +71,7 @@
       <div class="msg-info-time">${formatDate(new Date())}</div>
     </div>
 
-    `+ text +`
+    `+ text + `
   </div>
 </div>
 `;
@@ -82,43 +82,62 @@
 
     function botResponse(rawText, command) {
       // Bot Response
-      if(command === "chat"){
-      $.get("/get", {msg: rawText, command: command}).done(function (data) {
-        console.log(rawText);
-        console.log(data);
-        var text = "";
-        var buttons = ``;
-        for (var key in data) {
-          if (data[key] === "button") {
-            buttons += `<div class="display-area"><button class="display-btn">${key}</button></div>`;
-          } else {
-            text += `<div class="msg-text"><br>${key}</div>`;
+      if (command === "chat") {
+        $.get("/get", { msg: rawText, command: command }).done(function (data) {
+          console.log(rawText);
+        //   data = `<html><head><title>Request Rejected</title></head>
+        // <body>The requested URL was rejected. Please consult with your administrator.<br/><br/>
+        //   Your support ID is b91544bb-cde7-4264-b5eb-3a946459940c<br/><br/><a href='javascript:history.back();'>[Go Back]</a></body></html>`;
+
+          // if (data.slice(0,6) != "<html>") {
+          //   console.log('not <html>!!')
+          //   console.log('it is', data.slice(0,6))
+          // } else {
+          //   console.log('It is html!!!')
+          // }
+
+          console.log(data);
+          console.log(typeof (data));
+
+          console.log(typeof (typeof (data)));
+
+          if (typeof (data) != 'object' && typeof (data) == 'string' && data.slice(0, 6) == "<html>") {
+            data = { "Hey, that is not a valid input. Try something from below": 'text', "<strong>Main menu</strong>": 'text', "Select the item you're looking for.": 'text', "F5 Solutions": 'button', "Company information": 'button' }
           }
-        }
-        const msgText = text + buttons;
-        appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
-        $(".display-btn").off("click");
-        $(".display-btn").click(function () {
-          console.log("Clicked");
-          const msgText = this.textContent;
 
-          const textHTML = `<div class="msg-text">${msgText}</div>`;
-          appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
-          botResponse(msgText, "chat");
+          var text = "";
+          var buttons = ``;
+          for (var key in data) {
+            if (data[key] === "button") {
+              buttons += `<div class="display-area"><button class="display-btn">${key}</button></div>`;
+            } else {
+              text += `<div class="msg-text"><br>${key}</div>`;
+            }
+          }
+          const msgText = text + buttons;
+          appendMessage(BOT_NAME, BOT_IMG, "left", msgText);
+          $(".display-btn").off("click");
+          $(".display-btn").click(function () {
+            console.log("Clicked");
+            const msgText = this.textContent;
+
+            const textHTML = `<div class="msg-text">${msgText}</div>`;
+            appendMessage(PERSON_NAME, PERSON_IMG, "right", textHTML);
+            botResponse(msgText, "chat");
+          });
         });
-      });
       }
-      else if(command === "start"){
+      else if (command === "start") {
         var result = ""
-        $.get("/get", {msg: rawText, command: command}).done(function (data) {
-        console.log(rawText);
-        console.log(data);
-        for(var key in data){
-          result = `<div class="msg-text"><br>${key}</div>`;
-          appendMessage(BOT_NAME, BOT_IMG, "left", result);
-          // botResponse(msgText, "chat");
+        $.get("/get", { msg: rawText, command: command }).done(function (data) {
+          console.log(rawText);
+          console.log(data);
+          for (var key in data) {
+            result = `<div class="msg-text"><br>${key}</div>`;
+            appendMessage(BOT_NAME, BOT_IMG, "left", result);
+            // botResponse(msgText, "chat");
 
-        }
+          }
         });
         return result;
       }
