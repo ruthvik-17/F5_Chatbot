@@ -270,6 +270,11 @@ class ChatBot:
         return order
 
     def add_to_db(self, command_data, command):
+
+        # if no browser is detected
+        if self.browser == None:
+            self.browser = 'mystery_browser'
+
         with open('data.json', "r") as f:
             self.db = json.load(f)
         f.close()
