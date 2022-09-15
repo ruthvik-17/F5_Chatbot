@@ -243,7 +243,7 @@ class ChatBot:
         #     smtp_server = "smtp.gmail.com"
         #     self.sender_email = "dev.abhyas@gmail.com"
         #     self.receiver_email = "f20160034@hyderabad.bits-pilani.ac.in"
-        #     password = "AbhyasSharedPass"
+        #     password = ""
         #     context = ssl.create_default_context()
         #     self.server = smtplib.SMTP_SSL(smtp_server, port, context=context)
 
