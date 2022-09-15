@@ -14,3 +14,4 @@ __pycache__/detection.cpython-36.pyc
 en.pkl
 en_large.pkl
 .idea
+__pycache__/
