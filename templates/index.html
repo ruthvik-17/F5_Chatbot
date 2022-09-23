@@ -132,6 +132,12 @@
         $.get("/get", { msg: rawText, command: command }).done(function (data) {
           console.log(rawText);
           console.log(data);
+          // data = '<html>'
+          // check the data contents
+          if (typeof (data) != 'object' && typeof (data) == 'string' && data.slice(0, 6) == "<html>") {
+            data = { "Welcome to F5 Chatbot!<br></br>What brings you here!?": 'text'}
+          }
+
           for (var key in data) {
             result = `<div class="msg-text"><br>${key}</div>`;
             appendMessage(BOT_NAME, BOT_IMG, "left", result);
