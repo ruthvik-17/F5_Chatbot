@@ -1,3 +1,14 @@
+## Pull Request Checklist
+Before submitting your PR, please review the following checklist:
+
+- [ ] **CONSIDER** adding a unit test if your PR resolves an issue.
+- [ ] **DO** keep pull requests small so they can be easily reviewed.
+- [ ] **DO** make sure unit tests pass.
+- [ ] **DO** make sure any public APIs are documented.
+- [ ] **DO** make sure not to introduce any compiler warnings. 
+
+
+## Pull Request Type
 Please check the type of change your PR introduces:
 - [ ] Bugfix
 - [ ] Feature
@@ -5,16 +16,7 @@ Please check the type of change your PR introduces:
 - [ ] Refactoring (no functional changes, no api changes)
 - [ ] Build related changes
 - [ ] Documentation content changes
-- [ ] Other (please describe): 
-
-
-Before submitting your PR, please review the following checklist:
-
-- [ ] **CONSIDER** adding a unit test if your PR resolves an issue.
-- [ ] **DO** keep pull requests small so they can be easily reviewed.
-- [ ] **DO** make sure unit tests pass.
-- [ ] **DO** make sure any public APIs are documented.
-- [ ] **DO** make sure not to introduce any compiler warnings.
+- [ ] Other (please describe):  
 
 
 ## What is the current behavior?
