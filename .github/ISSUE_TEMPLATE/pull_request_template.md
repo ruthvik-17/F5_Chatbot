@@ -24,7 +24,7 @@ Please check the type of change your PR introduces:
 
 
 <!-- Issues are required for both bug fixes and features. -->
-Issue URL: 
+**Issue URL**: resolves #
 
 
 ## What is the new behavior?
